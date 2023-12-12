@@ -1,3 +1,5 @@
 import { drawGrid } from './grid.js'
 
-drawGrid()
+document.addEventListener("DOMContentLoaded", function () {
+    drawGrid();
+});
