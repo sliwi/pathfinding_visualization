@@ -4,7 +4,7 @@ import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 const CELL_STATUS = {
     unvisited: 'unvisited',
     visited: 'visited',
-    obstacle: 'obstacle',
+    wall: 'wall',
     start: 'start',
     end: 'end',
     path: 'path'
@@ -22,6 +22,10 @@ class Cell {
     }
     //A function that populates the neighbours array.
     getNeighbours(grid) {
+
+        if (this.neighbours.length() != 0) {
+            return this.neighbours
+        }
         //Define up,down,right,left indices
         upNeighbourInd = row + 1
         downNeighbourInd = row - 1
@@ -51,6 +55,8 @@ class Cell {
         if (isValidIndex(upNeighbourInd)) {
             this.neighbours.push(grid[leftNeighbourInd, col])
         }
+
+        return this.neighbours
     }
 }
 
@@ -164,7 +170,7 @@ function handleCellClick(d, element) {
             d.cellStatus = CELL_STATUS.end;
             setEnd = true
         } else {
-            d.cellStatus == CELL_STATUS.wall
+            d.cellStatus = CELL_STATUS.wall;
         }
         //update the cell 
         update(d, element)
