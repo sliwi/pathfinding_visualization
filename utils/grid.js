@@ -146,6 +146,7 @@ function drawGrid() {
 
 //Function that updates the cell to the appropriate colour.
 function update(d, element) {
+    // TODO: Switch from adding styles to adding a class 
     d3.select(element).style('fill', () => {
         if (d.cellStatus == CELL_STATUS.start) return 'greenyellow';
         if (d.cellStatus == CELL_STATUS.end) return '#FF5733';
