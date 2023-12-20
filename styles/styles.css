@@ -1,0 +1,15 @@
+.grid-cell {
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 1px;
+}
+
+#grid-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body {
+    background-color: lightgrey;
+}
