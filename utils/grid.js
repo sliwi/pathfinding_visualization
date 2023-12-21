@@ -13,9 +13,11 @@ const CELL_STATUS = {
 //Define a class Cell
 class Cell {
 
-    constructor(xpos, ypos, cellSize) {
+    constructor(xpos, ypos, row, col, cellSize) {
         this.xpos = xpos
         this.ypos = ypos
+        this.row = row
+        this.col = col
         this.cellSize = cellSize
         this.cellStatus = CELL_STATUS.unvisited;
         this.neighbours = []
@@ -23,40 +25,51 @@ class Cell {
     //A function that populates the neighbours array.
     getNeighbours(grid) {
 
-        if (this.neighbours.length() != 0) {
+        if (this.neighbours.length != 0) {
             return this.neighbours
         }
         //Define up,down,right,left indices
-        upNeighbourInd = row + 1
-        downNeighbourInd = row - 1
-        rightNeighbourInd = col + 1
-        leftNeighbourInd = col - 1
+        const upNeighbourInd = this.row + 1
+        const downNeighbourInd = this.row - 1
+        const rightNeighbourInd = this.col + 1
+        const leftNeighbourInd = this.col - 1
 
         //Helper function to see if the index is valid
-        const isValidIndex = (index) => {
+        const isValidNeighbour = (index) => {
             if (index >= gridColLength || index >= gridRowLength || index < 0) {
                 return false
             }
+
+            const statusA = grid[this.row][index]; //we're changing the column
+            const statusB = grid[index][this.col]; //we're changing the row
+
+            if (statusA == CELL_STATUS.wall || statusA == CELL_STATUS.visited) {
+                return false
+            }
+            if (statusB == CELL_STATUS.wall || statusB == CELL_STATUS.visited) {
+                return false
+            }
+
             return true
         }
         //get up neighbour
-        if (isValidIndex(upNeighbourInd)) {
-            this.neighbours.push(grid[upNeighbourInd, col])
+        if (isValidNeighbour(upNeighbourInd)) {
+            this.neighbours.push(grid[upNeighbourInd][this.col])
         }
         //get down neighbour 
-        if (isValidIndex(upNeighbourInd)) {
-            this.neighbours.push(grid[downNeighbourInd, col])
+        if (isValidNeighbour(upNeighbourInd)) {
+            this.neighbours.push(grid[downNeighbourInd][this.col])
         }
         //get right neighbour
-        if (isValidIndex(upNeighbourInd)) {
-            this.neighbours.push(grid[rightNeighbourInd, col])
+        if (isValidNeighbour(upNeighbourInd)) {
+            this.neighbours.push(grid[this.row][rightNeighbourInd])
         }
         //get left neighbour
-        if (isValidIndex(upNeighbourInd)) {
-            this.neighbours.push(grid[leftNeighbourInd, col])
+        if (isValidNeighbour(upNeighbourInd)) {
+            this.neighbours.push(grid[this.row][leftNeighbourInd])
         }
 
-        return this.neighbours
+        return this.neighbours;
     }
 }
 
@@ -66,6 +79,7 @@ const cellSize = 25;
 const gridColLength = gridSize / cellSize;
 const gridRowLength = gridSize / cellSize;
 const updatedCells = new Set();
+let startCell = null;
 const grid = createGrid();
 
 //Define variables
@@ -75,7 +89,7 @@ let setEnd = false  //determines if the end cell has been chosen
 
 //A function that creates the grid array
 function createGrid() {
-    const grid = []
+    const grid = [];
     var xpos = 0; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
     var ypos = 0;
 
@@ -85,7 +99,7 @@ function createGrid() {
 
         for (let col = 0; col < gridRowLength; col++) {
             //add column
-            grid[row].push(new Cell(xpos, ypos, cellSize));
+            grid[row].push(new Cell(xpos, ypos, row, col, cellSize));
             xpos += cellSize;
         }
         // reset the x position after a row is complete
@@ -97,7 +111,7 @@ function createGrid() {
     return grid;
 }
 
-console.log(grid)
+// console.log(grid)
 
 //A function that draws the grid.
 function drawGrid() {
@@ -144,17 +158,44 @@ function drawGrid() {
         });
 }
 
+function getCellColour(cellStatus) {
+    if (cellStatus == CELL_STATUS.start) return 'greenyellow';
+    if (cellStatus == CELL_STATUS.end) return '#FF5733';
+    if (cellStatus == CELL_STATUS.wall) return 'black';
+    if (cellStatus == CELL_STATUS.path) return 'yellow';
+    if (cellStatus == CELL_STATUS.visited) return '2C93E8';
+    return 'white';
+}
+
+function updateGrid() {
+    const cells = d3.selectAll(".square");
+
+    cells.style("fill", (d, i) => getCellColour(d.cellStatus));
+}
 //Function that updates the cell to the appropriate colour.
 function update(d, element) {
     // TODO: Switch from adding styles to adding a class 
-    d3.select(element).style('fill', () => {
-        if (d.cellStatus == CELL_STATUS.start) return 'greenyellow';
-        if (d.cellStatus == CELL_STATUS.end) return '#FF5733';
-        if (d.cellStatus == CELL_STATUS.wall) return 'black';
-        if (d.cellStatus == CELL_STATUS.path) return 'yellow';
-        if (d.cellStatus == CELL_STATUS.visited) return '2C93E8';
-        return 'white';
-    });
+    let cellStatus = null;
+
+    if (setStart == false) {
+        cellStatus = CELL_STATUS.start;
+        setStart = true;
+        startCell = d.toElement.__data__;
+        console.log(startCell)
+    }
+    else if (setEnd == false) {
+        cellStatus = CELL_STATUS.end;
+        setEnd = true
+    } else {
+        cellStatus = CELL_STATUS.wall;
+    }
+
+    d3.select(element).style('fill', getCellColour(cellStatus));
+
+    const cellObject = d.toElement.__data__;
+    grid[cellObject.row][cellObject.col].cellStatus = cellStatus;
+    // console.log(grid)
+
 }
 
 // Implement the handleCellClick function to handle user interactions
@@ -162,21 +203,18 @@ function handleCellClick(d, element) {
 
     if (!updatedCells.has(element)) {
         updatedCells.add(element);
-
-        if (setStart == false) {
-            d.cellStatus = CELL_STATUS.start;
-            setStart = true
-        }
-        else if (setEnd == false) {
-            d.cellStatus = CELL_STATUS.end;
-            setEnd = true
-        } else {
-            d.cellStatus = CELL_STATUS.wall;
-        }
         //update the cell 
         update(d, element)
     }
 
 }
 
-export { drawGrid };
+function getStart() {
+    return startCell;
+}
+
+function getGrid() {
+    return grid;
+}
+
+export { createGrid, drawGrid, updateGrid, getStart, getGrid };
