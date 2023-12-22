@@ -38,8 +38,9 @@ function bfs(start, grid) {
 
     console.log(start)
     while (!queue.isEmpty()) {
+        console.log('iteration 1')
         let currentNode = queue.dequeue();
-
+        // console.log(currentNode)
         if (currentNode.cellStatus == CELL_STATUS.end) {
             setPath(currentNode);
             break;
@@ -47,10 +48,10 @@ function bfs(start, grid) {
 
         currentNode.cellStatus = CELL_STATUS.visited;
         updateGrid()
-        console.log(currentNode)
         const neighbours = currentNode.getNeighbours(grid)
 
         for (let neighbour of neighbours) {
+            console.log(neighbour)
             queue.enqueue(neighbour)
             parents[neighbour] = currentNode
         }

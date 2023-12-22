@@ -36,7 +36,7 @@ class Cell {
 
         //Helper function to see if the index is valid
         const isValidNeighbour = (index) => {
-            if (index >= gridColLength || index >= gridRowLength || index < 0) {
+            if (index >= grid.length || index >= grid[0].length || index < 0) {
                 return false
             }
 
@@ -57,15 +57,15 @@ class Cell {
             this.neighbours.push(grid[upNeighbourInd][this.col])
         }
         //get down neighbour 
-        if (isValidNeighbour(upNeighbourInd)) {
+        if (isValidNeighbour(downNeighbourInd)) {
             this.neighbours.push(grid[downNeighbourInd][this.col])
         }
         //get right neighbour
-        if (isValidNeighbour(upNeighbourInd)) {
+        if (isValidNeighbour(rightNeighbourInd)) {
             this.neighbours.push(grid[this.row][rightNeighbourInd])
         }
         //get left neighbour
-        if (isValidNeighbour(upNeighbourInd)) {
+        if (isValidNeighbour(leftNeighbourInd)) {
             this.neighbours.push(grid[this.row][leftNeighbourInd])
         }
 
