@@ -22,8 +22,14 @@ class Cell {
         this.cellStatus = CELL_STATUS.unvisited;
         this.neighbours = []
     }
+
+    setStatus(status) {
+        this.cellStatus = status;
+    }
     //A function that populates the neighbours array.
     getNeighbours(grid) {
+
+        console.log(grid);
 
         if (this.neighbours.length != 0) {
             return this.neighbours
@@ -35,37 +41,43 @@ class Cell {
         const leftNeighbourInd = this.col - 1
 
         //Helper function to see if the index is valid
-        const isValidNeighbour = (index) => {
+        const isValidNeighbour = (index, direction) => {
             if (index >= grid.length || index >= grid[0].length || index < 0) {
                 return false
             }
 
-            const statusA = grid[this.row][index]; //we're changing the column
-            const statusB = grid[index][this.col]; //we're changing the row
+            let status = null;
 
-            if (statusA == CELL_STATUS.wall || statusA == CELL_STATUS.visited) {
+            if (direction == "horizontal") {
+                status = grid[this.row][index].cellStatus; //we're changing the column
+            } else {
+                status = grid[index][this.col].cellStatus // we're changing the row
+            }
+
+
+
+            if (status == CELL_STATUS.wall || status == CELL_STATUS.visited || status == CELL_STATUS.start) {
+                console.log('IN HERE A')
                 return false
             }
-            if (statusB == CELL_STATUS.wall || statusB == CELL_STATUS.visited) {
-                return false
-            }
+
 
             return true
         }
         //get up neighbour
-        if (isValidNeighbour(upNeighbourInd)) {
+        if (isValidNeighbour(upNeighbourInd, "vertical")) {
             this.neighbours.push(grid[upNeighbourInd][this.col])
         }
         //get down neighbour 
-        if (isValidNeighbour(downNeighbourInd)) {
+        if (isValidNeighbour(downNeighbourInd, "vertical")) {
             this.neighbours.push(grid[downNeighbourInd][this.col])
         }
         //get right neighbour
-        if (isValidNeighbour(rightNeighbourInd)) {
+        if (isValidNeighbour(rightNeighbourInd, "horizontal")) {
             this.neighbours.push(grid[this.row][rightNeighbourInd])
         }
         //get left neighbour
-        if (isValidNeighbour(leftNeighbourInd)) {
+        if (isValidNeighbour(leftNeighbourInd, "horizontal")) {
             this.neighbours.push(grid[this.row][leftNeighbourInd])
         }
 
@@ -163,14 +175,18 @@ function getCellColour(cellStatus) {
     if (cellStatus == CELL_STATUS.end) return '#FF5733';
     if (cellStatus == CELL_STATUS.wall) return 'black';
     if (cellStatus == CELL_STATUS.path) return 'yellow';
-    if (cellStatus == CELL_STATUS.visited) return '2C93E8';
+    if (cellStatus == CELL_STATUS.visited) return '#2C93E8';
     return 'white';
 }
 
-function updateGrid() {
+function updateGrid(row, col, item) {
+    grid[row][col] = item;
     const cells = d3.selectAll(".square");
 
-    cells.style("fill", (d, i) => getCellColour(d.cellStatus));
+    cells.style("fill", (d, i) => {
+        return getCellColour(d.cellStatus)
+    });
+
 }
 //Function that updates the cell to the appropriate colour.
 function update(d, element) {
@@ -181,7 +197,6 @@ function update(d, element) {
         cellStatus = CELL_STATUS.start;
         setStart = true;
         startCell = d.toElement.__data__;
-        console.log(startCell)
     }
     else if (setEnd == false) {
         cellStatus = CELL_STATUS.end;
@@ -193,7 +208,10 @@ function update(d, element) {
     d3.select(element).style('fill', getCellColour(cellStatus));
 
     const cellObject = d.toElement.__data__;
-    grid[cellObject.row][cellObject.col].cellStatus = cellStatus;
+    const cell = grid[cellObject.row][cellObject.col];
+
+    cell.setStatus(cellStatus);
+    grid[cellObject.row][cellObject.col] = cell;
     // console.log(grid)
 
 }
