@@ -9,11 +9,21 @@
 </head>
 
 <body>
-    <h1>Hello World!</h1>
     <div id="grid-container">
 
     </div>
-    <button id="start">Start</button>
+    <div id="sidebar">
+        <div id="menu">
+            <select id="dropdown">
+                <option value="bfs">Breadth-First Search</option>
+                <option value="dfs">Depth-First Search</option>
+            </select>
+            <button id="start">Start</button>
+            <button id="reset">reset</button>
+            <button id="reset_all">reset all</button>
+
+        </div>
+    </div>
     <script type="module" src="scripts/main.js"></script>
 </body>
 

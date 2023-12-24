@@ -4,10 +4,31 @@
     stroke-width: 1px;
 }
 
+body {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-template-areas: "grid sidebar";
+    height: 100vh;
+    margin: 0;
+
+}
+
 #grid-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    grid-area: grid;
+    height: 100%;
+}
+
+#sidebar {
+    grid-area: sidebar;
+    background-color: aliceblue;
+    height: 100%;
+}
+
+#menu {
+    margin: 1em;
 }
 
 body {

@@ -29,8 +29,6 @@ class Cell {
     //A function that populates the neighbours array.
     getNeighbours(grid) {
 
-        console.log(grid);
-
         if (this.neighbours.length != 0) {
             return this.neighbours
         }
@@ -57,7 +55,6 @@ class Cell {
 
 
             if (status == CELL_STATUS.wall || status == CELL_STATUS.visited || status == CELL_STATUS.start) {
-                console.log('IN HERE A')
                 return false
             }
 
@@ -123,7 +120,6 @@ function createGrid() {
     return grid;
 }
 
-// console.log(grid)
 
 //A function that draws the grid.
 function drawGrid() {
@@ -235,4 +231,45 @@ function getGrid() {
     return grid;
 }
 
-export { createGrid, drawGrid, updateGrid, getStart, getGrid };
+function reset() {
+    //set visited to unvisited, set path to unvisited, and clear the neighbours
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[0].length; j++) {
+            //clear neighbours
+            grid[i][j].neighbours = []
+
+            const cellStatus = grid[i][j].cellStatus;
+            if (cellStatus == CELL_STATUS.visited || cellStatus == CELL_STATUS.path) {
+                grid[i][j].setStatus(CELL_STATUS.unvisited);
+            }
+        }
+    }
+
+    const cells = d3.selectAll(".square");
+
+    cells.style("fill", (d, i) => {
+        return getCellColour(d.cellStatus)
+    });
+}
+
+//clear the entire grid
+function resetAll() {
+    startCell = null;
+    setStart = false;
+    setEnd = false;
+
+    for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[0].length; j++) {
+            //reset status and clear neighbours
+            grid[i][j].setStatus(CELL_STATUS.unvisited);
+            grid[i][j].neighbours = []
+        }
+    }
+
+    const cells = d3.selectAll(".square");
+    cells.style("fill", (d, i) => {
+        return getCellColour(d.cellStatus)
+    });
+}
+
+export { drawGrid, updateGrid, getStart, getGrid, reset, resetAll };
