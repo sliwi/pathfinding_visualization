@@ -1,6 +1,6 @@
 import Queue from '../utils/queue.js'
 import { drawGrid, getStart, getGrid, reset, resetAll } from '../utils/grid.js';
-import { bfs, dfs, a_star } from '../utils/algorithms.js';
+import { bfs, dfs, a_star, setDelay } from '../utils/algorithms.js';
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -8,10 +8,16 @@ document.addEventListener("DOMContentLoaded", function () {
     drawGrid();
 
     const dropdown = document.getElementById("dropdown");
+    const speedSlider = document.getElementById("speed-slider");
 
 
     document.getElementById("start").addEventListener("click", () => {
         const algorithm = dropdown.value;
+        const delay = speedSlider.value;
+
+        console.log(delay)
+        //set the delay
+        setDelay(delay);
 
         if (algorithm == "bfs") {
             bfs(getStart(), getGrid());

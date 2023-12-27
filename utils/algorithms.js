@@ -12,8 +12,12 @@ const CELL_STATUS = {
 }
 
 //delay
-const DELAY = 50
+let delay = 50
 
+function setDelay(delayInput) {
+    delay = delayInput
+}
+//A helper function that finds the path
 async function setPath(node, parents) {
     let currentNode = node;
 
@@ -34,7 +38,7 @@ async function setPath(node, parents) {
         await new Promise(resolve => setTimeout(() => {
             updateGrid(row, col, parent);
             resolve();
-        }, DELAY));
+        }, delay));
     }
 }
 
@@ -67,7 +71,7 @@ async function bfs(start, grid) {
         await new Promise(resolve => setTimeout(() => {
             updateGrid(row, col, currentNode);
             resolve();
-        }, DELAY));
+        }, delay));
 
         const neighbours = currentNode.getNeighbours(grid)
 
@@ -108,7 +112,7 @@ async function dfs(start, grid) {
         await new Promise(resolve => setTimeout(() => {
             updateGrid(row, col, currentNode);
             resolve();
-        }, DELAY));
+        }, delay));
 
         const neighbours = currentNode.getNeighbours(grid)
 
@@ -123,4 +127,4 @@ async function dfs(start, grid) {
     console.log("Completed DFS")
 }
 
-export { bfs, dfs, a_star }
+export { bfs, dfs, a_star, setDelay }
