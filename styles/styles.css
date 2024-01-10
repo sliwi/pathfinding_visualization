@@ -20,7 +20,7 @@ body {
     align-items: center;
     grid-area: grid;
     height: 100%;
-    background-color: grey;
+    background-color: #363636;
 }
 
 #sidebar {

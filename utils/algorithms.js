@@ -1,4 +1,5 @@
 import Queue from '../utils/queue.js'
+import PriorityQueue from '../utils/priorityQueue.js'
 import { updateGrid } from '../utils/grid.js';
 
 //Define a cell status object
@@ -42,8 +43,80 @@ async function setPath(node, parents) {
     }
 }
 
-function a_star(start, end, grid) {
+//A heuristic function for the A* algorithm
+function heuristic(start,goal){
+    return (Math.abs(start.xpos-goal.xpos) + Math.abs(start.ypos-goal.ypos));
+}
+
+async function a_star(start, end, grid) {
     console.log("Running A*");
+
+
+    const openSet = new PriorityQueue();
+    const visitedSet = new Set();
+    const parents = new Map();
+    const gScore = new Map();
+    const fScore = new Map();
+
+    //Initialize all values to infinity
+    for(let i=0; i<grid.length; i++){
+        for(let cell of grid[i]){
+            gScore.set(cell,Infinity);
+            fScore.set(cell,Infinity);
+        }
+    }
+
+    openSet.enqueue(0,start);
+    visitedSet.add(start);
+    gScore.set(start,0);
+    fScore.set(start,heuristic(start,end));
+
+    while(!openSet.isEmpty()){ 
+        const currentNode = openSet.dequeue();
+        visitedSet.delete(currentNode);
+        
+        //if we found the end node, stop iterating.
+        if(currentNode===end){
+            console.log("Path found!");
+            setPath(end,parents);
+            break;
+        }
+        
+        const row = currentNode.row;
+        const col = currentNode.col;
+        const cellStatus = currentNode.cellStatus;
+
+        if (!(cellStatus == CELL_STATUS.start || cellStatus == CELL_STATUS.end || cellStatus == CELL_STATUS.wall)) {
+            currentNode.setStatus(CELL_STATUS.visited)
+        }
+
+        //update the grid (re-draw)
+        await new Promise(resolve => setTimeout(() => {
+            updateGrid(row, col, currentNode);
+            resolve();
+        }, delay));
+
+        const neighbours = currentNode.getNeighbours(grid)
+
+        for(let neighbour of neighbours){
+            const tmpGScore = gScore.get(currentNode)+1;
+           
+            if(tmpGScore<gScore.get(neighbour)){
+              
+                gScore.set(neighbour,tmpGScore);
+                fScore.set(neighbour,tmpGScore+heuristic(neighbour,end));
+
+                //check if this is the first time we are visiting the node
+                if(!visitedSet.has(neighbour)){
+                    parents[[neighbour, neighbour.row, neighbour.col]] = currentNode
+
+                    openSet.enqueue(fScore.get(neighbour),neighbour);
+                    visitedSet.add(neighbour);
+                 
+                }
+            }
+        }
+    }
 }
 
 async function bfs(start, grid) {
