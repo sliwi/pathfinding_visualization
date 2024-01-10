@@ -1,7 +1,6 @@
 import Queue from '../utils/queue.js'
-import { drawGrid, getStart, getGrid, reset, resetAll } from '../utils/grid.js';
+import { drawGrid, getStart, getEnd, getGrid, reset, resetAll } from '../utils/grid.js';
 import { bfs, dfs, a_star, setDelay } from '../utils/algorithms.js';
-
 
 document.addEventListener("DOMContentLoaded", function () {
     //draw the grid
@@ -19,7 +18,10 @@ document.addEventListener("DOMContentLoaded", function () {
         //set the delay
         setDelay(delay);
 
-        if (algorithm == "bfs") {
+        if (algorithm == "a_star"){
+            a_star(getStart(), getEnd(), getGrid());
+        }
+        else if (algorithm == "bfs") {
             bfs(getStart(), getGrid());
         }
         else if (algorithm == "dfs") {

@@ -89,6 +89,7 @@ const gridColLength = gridSize / cellSize;
 const gridRowLength = gridSize / cellSize;
 const updatedCells = new Set();
 let startCell = null;
+let endCell = null
 const grid = createGrid();
 
 //Define variables
@@ -197,6 +198,7 @@ function update(d, element) {
     else if (setEnd == false) {
         cellStatus = CELL_STATUS.end;
         setEnd = true
+        endCell = d.toElement.__data__;
     } else {
         cellStatus = CELL_STATUS.wall;
     }
@@ -227,6 +229,11 @@ function getStart() {
     return startCell;
 }
 
+
+function getEnd() {
+    return endCell;
+}
+
 function getGrid() {
     return grid;
 }
@@ -255,6 +262,7 @@ function reset() {
 //clear the entire grid
 function resetAll() {
     startCell = null;
+    endCell = null
     setStart = false;
     setEnd = false;
 
@@ -272,4 +280,4 @@ function resetAll() {
     });
 }
 
-export { drawGrid, updateGrid, getStart, getGrid, reset, resetAll };
+export { drawGrid, updateGrid, getStart,getEnd, getGrid, reset, resetAll };
