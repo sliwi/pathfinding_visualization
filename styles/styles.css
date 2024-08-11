@@ -19,8 +19,14 @@ body {
     justify-content: center;
     align-items: center;
     grid-area: grid;
-    height: 100%;
+    width: 100%;
+    height: 100vh;
     background-color: #363636;
+}
+
+#grid-container svg {
+    width: 100%;
+    height: 100%;
 }
 
 #sidebar {

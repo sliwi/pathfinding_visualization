@@ -83,7 +83,8 @@ class Cell {
 }
 
 //Define constants
-const gridSize = 500;
+const gridContainer = document.getElementById("grid-container")
+const gridSize = gridContainer.clientWidth;
 const cellSize = 25;
 const gridColLength = gridSize / cellSize;
 const gridRowLength = gridSize / cellSize;
